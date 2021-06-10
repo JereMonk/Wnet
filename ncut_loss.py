@@ -473,7 +473,7 @@ def convert_to_batchTensor(indeces, batch_values, dense_shape):
     batchTensor = tf.SparseTensor(new_indeces,new_batch_values,new_dense_shape)
     return batchTensor
 
-def compute_soft_ncuts_(image,segment,neighbor_filter):
+def compute_soft_ncuts(image,segment,neighbor_filter):
 
   _image_weights= brightness_weight(image, neighbor_filter)
   image_weights = convert_to_batchTensor(*_image_weights)
