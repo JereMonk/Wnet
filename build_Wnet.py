@@ -1,4 +1,4 @@
-import Wnet.ncut_loss
+from Wnet import ncut_loss
 import tensorflow as tf
 
 class build_Wnet(keras.Model):
