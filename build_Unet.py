@@ -6,7 +6,10 @@ def build_Unet(K,stages,filters,type):
 
   concats=[]
   
-  inputs =tf.keras.Input(shape=(224,224,3))
+  if (type=='encoder'):
+    inputs =tf.keras.Input(shape=(224,224,3))
+  else:
+    inputs =tf.keras.Input(shape=(224,224,K))
 
   x = inputs
   for i in stages:
