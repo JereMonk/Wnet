@@ -480,3 +480,11 @@ def compute_soft_ncuts_(image,segment,neighbor_filter):
 
   soft_ncuts = soft_ncut(image, segment, image_weights)
   return(soft_ncuts)
+
+
+def neighbor_filter(image_shape):
+    gauss_indeces, gauss_vals = gaussian_neighbor(image_shape, sigma_X = 4, r = 5)
+    weight_shapes = np.prod(image_shape)
+    neighbor_shape= [weight_shapes, weight_shapes]
+    neighbor_filter = gauss_indeces,gauss_vals,neighbor_shape
+    return neighbor_filter
