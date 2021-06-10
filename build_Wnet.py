@@ -1,7 +1,7 @@
 import Wnet.ncut_loss
 import tensorflow as tf
 
-class Wnet(keras.Model):
+class build_Wnet(keras.Model):
     def __init__(
         self,
         encoder,
