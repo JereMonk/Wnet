@@ -479,7 +479,8 @@ def compute_soft_ncuts(image,segment,neighbor_filter):
   image_weights = convert_to_batchTensor(*_image_weights)
 
   soft_ncuts = soft_ncut(image, segment, image_weights)
-  return(soft_ncuts)
+  loss = tf.reduce_sum(soft_ncuts)
+  return(loss)
 
 
 def neighbor_filter(image_shape):
