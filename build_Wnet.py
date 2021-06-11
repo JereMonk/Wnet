@@ -59,20 +59,20 @@ class Wnet(tf.keras.Model):
           
           
         grads_encoder_1 = tape.gradient(loss_encoder, self.encoder.trainable_variables)
-        grads_encoder_2 = tape.gradient(loss_decoder, self.encoder.trainable_variables)
-        grads_decoder = tape.gradient(loss_decoder, self.decoder.trainable_variables)
+        grads_2 = tape.gradient(loss_decoder, self.encoder.trainable_variables+self.decoder.trainable_variables)
+        #grads_decoder = tape.gradient(loss_decoder, self.decoder.trainable_variables)
 
    
         self.optimizer.apply_gradients(
             zip(grads_encoder_1, self.encoder.trainable_variables)
         )
         self.optimizer.apply_gradients(
-            zip(grads_encoder_2, self.encoder.trainable_variables)
+            zip(grads_2, self.encoder.trainable_variables+self.decoder.trainable_variables)
         )
         
-        self.optimizer.apply_gradients(
-            zip(grads_decoder, self.decoder.trainable_variables)
-        )
+        #self.optimizer.apply_gradients(
+        #    zip(grads_decoder, self.decoder.trainable_variables)
+        #)
 
         return {
             "loss_encoder": loss_encoder,

@@ -59,7 +59,7 @@ def build_Unet(K,stages,filters,type):
 
   if(type == 'encoder'):
     x = tf.keras.layers.Conv2D(filters=K,kernel_size=(1,1),strides=(1,1),padding='same',kernel_initializer=k_initializer)(x)
-    x = tf.keras.layers.Softmax(axis=-1)(x)
+    x = tf.keras.layers.Softmax()(x)
   else:
     x = tf.keras.layers.Conv2D(filters=3,kernel_size=(1,1),strides=(1,1),padding='same',kernel_initializer=k_initializer)(x)
     
