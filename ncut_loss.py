@@ -328,7 +328,7 @@ def gaussian_neighbor(image_shape, sigma_X = 4, r = 5):
     vals = np.hstack(val_lst).astype(np.float)
     return indeces, vals
 
-def brightness_weight(image, neighbor_filter, sigma_I = 0.05):
+def brightness_weight(image, neighbor_filter, sigma_I = 0.005):
     """
     Calculate likelihood of pixels in image by their metric in brightness.
     
@@ -351,7 +351,7 @@ def brightness_weight(image, neighbor_filter, sigma_I = 0.05):
     image_shape = image.get_shape()
     weight_size = image_shape[1] * image_shape[2]
     
-    hsv_image = tf.image.rgb_to_hsv(image/255)
+    hsv_image = tf.image.rgb_to_hsv(image)
     bright_image = hsv_image[:,:,:,2]
     bright_image = tf.reshape(bright_image, shape=(-1, weight_size)) # [B, W*H]
     bright_image = tf.transpose(bright_image, [1,0]) # [W*H,B]
