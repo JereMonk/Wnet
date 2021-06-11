@@ -77,5 +77,5 @@ class Wnet(tf.keras.Model):
 
         return {
             "loss_encoder": loss_encoder,
-            #"loss_decoder": loss_decoder,
+            "loss_decoder": loss_decoder,
         }
