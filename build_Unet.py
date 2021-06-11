@@ -14,11 +14,11 @@ def build_Unet(K,stages,filters,type):
   x = inputs
   for i in stages:
     x= tf.keras.layers.Conv2D(filters=filters,kernel_size=(3,3),strides=(1,1),padding='same',kernel_initializer=k_initializer)(x)
-    x = tf.keras.layers.BatchNormalization()(x)
-    x= tf.keras.layers.ReLU()(x)
+    #x = tf.keras.layers.BatchNormalization()(x)
+    #x= tf.keras.layers.ReLU()(x)
 
     x= tf.keras.layers.Conv2D(filters=filters,kernel_size=(3,3),strides=(1,1),padding='same',kernel_initializer=k_initializer)(x)
-    x = tf.keras.layers.BatchNormalization()(x)
+    #x = tf.keras.layers.BatchNormalization()(x)
     x= tf.keras.layers.ReLU()(x)
 
     concats.append(x)
@@ -33,11 +33,11 @@ def build_Unet(K,stages,filters,type):
 
 
   x= tf.keras.layers.Conv2D(filters=filters,kernel_size=(3,3),strides=(1,1),padding='same',kernel_initializer=k_initializer)(x)
-  x = tf.keras.layers.BatchNormalization()(x)
-  x= tf.keras.layers.ReLU()(x)
+  #x = tf.keras.layers.BatchNormalization()(x)
+  #x= tf.keras.layers.ReLU()(x)
 
   x= tf.keras.layers.Conv2D(filters=filters,kernel_size=(3,3),strides=(1,1),padding='same',kernel_initializer=k_initializer)(x)
-  x = tf.keras.layers.BatchNormalization()(x)
+  #x = tf.keras.layers.BatchNormalization()(x)
   x= tf.keras.layers.ReLU()(x)
 
   for i in stages:
@@ -50,11 +50,11 @@ def build_Unet(K,stages,filters,type):
     x = tf.keras.layers.Concatenate(axis=3)([y, u])
     
     x= tf.keras.layers.Conv2D(filters=filters,kernel_size=(3,3),strides=(1,1),padding='same',kernel_initializer=k_initializer)(x)
-    x = tf.keras.layers.BatchNormalization()(x)
-    x= tf.keras.layers.ReLU()(x)
+    #x = tf.keras.layers.BatchNormalization()(x)
+    #x= tf.keras.layers.ReLU()(x)
 
     x= tf.keras.layers.Conv2D(filters=filters,kernel_size=(3,3),strides=(1,1),padding='same',kernel_initializer=k_initializer)(x)
-    x = tf.keras.layers.BatchNormalization()(x)
+    #x = tf.keras.layers.BatchNormalization()(x)
     x= tf.keras.layers.ReLU()(x)
 
   if(type == 'encoder'):
