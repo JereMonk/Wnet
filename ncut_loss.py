@@ -406,9 +406,9 @@ def soft_ncut(image, image_segment, image_weights):
     #add_activation_summary(assoc)
     
     # Soft NCut
-    eps = 1e-6
+    eps = 1e-20
     soft_ncut = tf.cast(num_class, tf.float32) - \
-                tf.reduce_sum((dis_assoc + eps) / (assoc + eps), axis=1)
+                tf.reduce_sum((dis_assoc ) / (assoc + eps), axis=1)
     
     return soft_ncut
 
