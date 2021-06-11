@@ -525,8 +525,8 @@ def compute_soft_ncuts(image,segment,neighbor_filter):
   return(loss)
 
 
-def neighbor_filter(image_shape):
-    gauss_indeces, gauss_vals = gaussian_neighbor(image_shape, sigma_X = 4, r = 7)
+def neighbor_filter(image_shape,sigma_X=4,r = 5):
+    gauss_indeces, gauss_vals = gaussian_neighbor(image_shape, sigma_X, r)
     weight_shapes = np.prod(image_shape)
     neighbor_shape= [weight_shapes, weight_shapes]
     neighbor_filter = gauss_indeces,gauss_vals,neighbor_shape
