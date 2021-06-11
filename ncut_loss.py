@@ -363,6 +363,42 @@ def brightness_weight(image, neighbor_filter, sigma_I = 0.05):
     
     return indeces, bright_weight, dense_shape
 
+def rgb_weight(image, neighbor_filter, sigma_I = 0.05):
+    """
+    Calculate likelihood of pixels in image by their metric in brightness.
+    
+    Args:
+        image: tensor [B, H, W, C]
+        neighbor_filter: is tensor list: [rows, cols, vals].
+                        where rows, and cols are pixel in image,
+                        val is their likelihood in distance.
+        sigma_I: sigma for metric of intensity.
+    returns:
+        SparseTensor properties:\
+            indeces: [N, ndims]
+            bright_weight: [N, batch_size]
+            dense_shape
+    """
+    
+    indeces, vals, dense_shape = neighbor_filter
+    rows = indeces[:,0]
+    cols = indeces[:,1]
+    image_shape = image.get_shape()
+    weight_size = image_shape[1] * image_shape[2]
+    
+    #hsv_image = tf.image.rgb_to_hsv(image)
+    #bright_image = hsv_image[:,:,:,2]
+    bright_image = tf.math.reduce_mean(image, axis=-1)**2
+    bright_image = tf.reshape(bright_image, shape=(-1, weight_size)) # [B, W*H]
+    bright_image = tf.transpose(bright_image, [1,0]) # [W*H,B]
+    
+    Fi = tf.transpose(tf.nn.embedding_lookup(bright_image, rows),[1,0]) # [B, #elements]
+    Fj = tf.transpose(tf.nn.embedding_lookup(bright_image, cols),[1,0]) # [B, #elements]
+    bright_weight = tf.exp(-(Fi - Fj)**2 / sigma_I**2) * vals
+    bright_weight = tf.transpose(bright_weight,[1,0]) # [#elements, B]
+    
+    return indeces, bright_weight, dense_shape
+
 
 def soft_ncut(image, image_segment, image_weights):
     """
@@ -481,7 +517,8 @@ def convert_to_batchTensor(indeces, batch_values, dense_shape):
 
 def compute_soft_ncuts(image,segment,neighbor_filter):
 
-  _image_weights= brightness_weight(image, neighbor_filter)
+  #_image_weights= brightness_weight(image, neighbor_filter)
+  _image_weights= rgb_weight(image, neighbor_filter)
   image_weights = convert_to_batchTensor(*_image_weights)
 
   soft_ncuts = soft_ncut(image, segment, image_weights)
