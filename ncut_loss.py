@@ -351,7 +351,7 @@ def brightness_weight(image, neighbor_filter, sigma_I = 0.05):
     image_shape = image.get_shape()
     weight_size = image_shape[1] * image_shape[2]
     
-    hsv_image = tf.image.rgb_to_hsv(image)
+    hsv_image = tf.image.rgb_to_hsv(image /255)
     bright_image = hsv_image[:,:,:,2]
     bright_image = tf.reshape(bright_image, shape=(-1, weight_size)) # [B, W*H]
     bright_image = tf.transpose(bright_image, [1,0]) # [W*H,B]
