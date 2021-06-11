@@ -351,7 +351,7 @@ def brightness_weight(image, neighbor_filter, sigma_I = 0.05):
     image_shape = image.get_shape()
     weight_size = image_shape[1] * image_shape[2]
     
-    hsv_image = tf.image.rgb_to_hsv(image /255)
+    hsv_image = tf.image.rgb_to_hsv(image)
     bright_image = hsv_image[:,:,:,2]
     bright_image = tf.reshape(bright_image, shape=(-1, weight_size)) # [B, W*H]
     bright_image = tf.transpose(bright_image, [1,0]) # [W*H,B]
@@ -361,7 +361,7 @@ def brightness_weight(image, neighbor_filter, sigma_I = 0.05):
     bright_weight = tf.exp(-(Fi - Fj)**2 / sigma_I**2) * vals
     bright_weight = tf.transpose(bright_weight,[1,0]) # [#elements, B]
     
-    return indeces, bright_weight, dense_shape,hsv_image
+    return indeces, bright_weight, dense_shape
 
 
 def soft_ncut(image, image_segment, image_weights):
