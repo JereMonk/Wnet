@@ -443,10 +443,9 @@ def soft_ncut(image, image_segment, image_weights):
     
     # Soft NCut
     eps = 1e-20
-    print(tf.reduce_sum((dis_assoc )))
-    print(tf.reduce_sum((assoc ) ))
-    soft_ncut = tf.cast(num_class, tf.float32) - \
-                tf.reduce_sum((dis_assoc ) / (assoc + eps), axis=1)
+    print(tf.reduce_sum((dis_assoc ),axis=1))
+    print(tf.reduce_sum((assoc ),axis=1 ))
+    soft_ncut = tf.cast(num_class, tf.float32) - tf.reduce_sum((dis_assoc ) / (assoc + eps), axis=1)
     
     return soft_ncut
 
