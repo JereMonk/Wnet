@@ -328,7 +328,7 @@ def gaussian_neighbor(image_shape, sigma_X = 4, r = 5):
     vals = np.hstack(val_lst).astype(np.float)
     return indeces, vals
 
-def brightness_weight(image, neighbor_filter, sigma_I =10):
+def brightness_weight(image, neighbor_filter, sigma_I =0.01):
     """
     Calculate likelihood of pixels in image by their metric in brightness.
     
@@ -363,7 +363,7 @@ def brightness_weight(image, neighbor_filter, sigma_I =10):
     
     return indeces, bright_weight, dense_shape
 
-def rgb_weight(image, neighbor_filter, sigma_I = 10):
+def rgb_weight(image, neighbor_filter, sigma_I = 0.01):
     """
     Calculate likelihood of pixels in image by their metric in brightness.
     
@@ -516,7 +516,7 @@ def convert_to_batchTensor(indeces, batch_values, dense_shape):
     batchTensor = tf.SparseTensor(new_indeces,new_batch_values,new_dense_shape)
     return batchTensor
 
-def compute_soft_ncuts(image,segment,neighbor_filter,sigma_I=10):
+def compute_soft_ncuts(image,segment,neighbor_filter,sigma_I=0.01):
 
   #_image_weights= brightness_weight(image, neighbor_filter)
   _image_weights= rgb_weight(image, neighbor_filter,sigma_I)
