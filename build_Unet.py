@@ -1,15 +1,15 @@
 import tensorflow as tf
 
-def build_Unet(K,stages,filters,type):
+def build_Unet(K,stages,filters,input_size,type):
 
   #k_initializer = tf.random_normal_initializer(mean=0.0, stddev=0.02, seed=None)
 
   concats=[]
   
   if (type=='encoder'):
-    inputs =tf.keras.Input(shape=(224,224,3))
+    inputs =tf.keras.Input(shape=(input_size,input_size,3))
   else:
-    inputs =tf.keras.Input(shape=(224,224,K))
+    inputs =tf.keras.Input(shape=(input_size,input_size,K))
 
   x = inputs
   for i in stages:
