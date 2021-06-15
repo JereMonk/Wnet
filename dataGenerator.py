@@ -2,6 +2,27 @@ from monk import Dataset, BBox
 import tensorflow as tf
 import numpy as np
 
+def my_to_bbox(polygon, allow_unsafe=False):
+        """ Get the smallest BBox encompassing the polygon """
+        xmin, ymin = np.inf, np.inf
+        xmax, ymax = -np.inf, -np.inf
+        for subpol in polygon.points:
+            xmin = min(xmin, *subpol[:, 0])
+            xmax = max(xmax, *subpol[:, 0])
+            ymin = min(ymin, *subpol[:, 1])
+            ymax = max(ymax, *subpol[:, 1])
+            
+        xmin = max(0,xmin)
+        ymin = max(0,ymin)
+        
+        return BBox(
+            label=polygon.label,
+            image_size=polygon.image_size,
+            xyxy=[xmin, ymin, xmax, ymax],
+            allow_unsafe=allow_unsafe,
+            attributes=polygon.attributes.copy(),
+        )
+
 class DataGenerator(tf.keras.utils.Sequence):
     
     def __init__(self,dataset, batch_size=32, dim=(128,128), n_channels=3,shuffle=True):
@@ -12,7 +33,6 @@ class DataGenerator(tf.keras.utils.Sequence):
         self.list_IDs = np.arange(len(dataset)) ###
         self.n_channels = n_channels ##
         self.shuffle = shuffle ##
-        self.labels_to_keep= labels_to_keep
         
         self.get_map_id()
         self.on_epoch_end()
@@ -32,10 +52,9 @@ class DataGenerator(tf.keras.utils.Sequence):
     def load_image(self,ids):
         imds = self.dataset[ids[0]]
         ann = imds.anns["polygons"][ids[1]]
-        att =ann.attributes
-        img_crop = imds.image.crop(ann.to_bbox()).resize(self.dim)
+        img_crop = imds.image.crop(my_to_bbox(ann)).resize(self.dim)
        
-        return(img_crop.rgb)
+        return(((img_crop.rgb/255)*2)-1)
         
     def __len__(self):
        
@@ -63,18 +82,16 @@ class DataGenerator(tf.keras.utils.Sequence):
     def __data_generation(self, list_IDs_temp):
         'Generates data containing batch_size samples' # X : (n_samples, *dim, n_channels)
         # Initialization
-        X = np.empty((self.batch_size, *self.dim, self.n_channels),dtype=int)
+        X = np.empty((self.batch_size, *self.dim, self.n_channels),dtype=np.float32)
         #y = np.empty((self.batch_size), dtype=int)
 
         # Generate data
         for i, ID in enumerate(list_IDs_temp):
             # Store sample
-            print(ID)
-            print(self.map_id[ID])
             X[i,] = self.load_image(self.map_id[ID])
 
             # Store class
             #y[i] = self.labels[ID]
 
         #return X, keras.utils.to_categorical(y, num_classes=self.n_classes)
-        return X
+        return tf.convert_to_tensor(X)

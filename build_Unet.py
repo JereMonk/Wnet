@@ -59,10 +59,11 @@ def build_Unet(K,stages,filters,input_size,type,last_layer_activation):
 
   if(type == 'encoder'):
     x = tf.keras.layers.Conv2D(filters=K,kernel_size=(1,1),strides=(1,1),padding='same')(x)
-   
+    x = tf.keras.layers.Softmax(axis=-1)(x)
   else:
     x = tf.keras.layers.Conv2D(filters=3,kernel_size=(1,1),strides=(1,1),padding='same')(x)
-  x= tf.keras.layers.Activation(last_layer_activation)(x)
+    x= tf.keras.layers.Activation('tanh')(x)
+  
 
   model = tf.keras.Model(inputs=inputs, outputs=x)
 
