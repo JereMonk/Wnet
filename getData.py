@@ -1,6 +1,7 @@
-from monk import Dataset, BBox
-import tensorflow as tf
 import numpy as np
+from monk import BBox
+import tensorflow as tf
+from monk import Dataset
 
 def my_to_bbox(polygon, allow_unsafe=False):
         """ Get the smallest BBox encompassing the polygon """
@@ -53,7 +54,8 @@ class DataGenerator(tf.keras.utils.Sequence):
         imds = self.dataset[ids[0]]
         ann = imds.anns["polygons"][ids[1]]
         img_crop = imds.image.crop(my_to_bbox(ann)).resize(self.dim)
-       
+        
+
         return(((img_crop.rgb/255)*2)-1)
         
     def __len__(self):
@@ -82,16 +84,26 @@ class DataGenerator(tf.keras.utils.Sequence):
     def __data_generation(self, list_IDs_temp):
         'Generates data containing batch_size samples' # X : (n_samples, *dim, n_channels)
         # Initialization
-        X = np.empty((self.batch_size, *self.dim, self.n_channels),dtype=np.float32)
+        X = np.empty((self.batch_size, *self.dim, self.n_channels),dtype=int)
         #y = np.empty((self.batch_size), dtype=int)
 
         # Generate data
         for i, ID in enumerate(list_IDs_temp):
             # Store sample
+            
             X[i,] = self.load_image(self.map_id[ID])
 
             # Store class
             #y[i] = self.labels[ID]
 
         #return X, keras.utils.to_categorical(y, num_classes=self.n_classes)
-        return tf.convert_to_tensor(X)
+        return tf.convert_to_tensor(X,dtype=tf.float32)
+
+
+def get_generator(path,size,batch_size,to_keep):
+
+    dataset_parts = Dataset.from_coco(path)
+    dataset_filtered = dataset_parts.filter_images_with_cats(keep=to_keep).filter_cats(keep=to_keep)
+    generator = DataGenerator(dataset_filtered,batch_size=batch_size,dim=(size,size))
+
+    return(generator)

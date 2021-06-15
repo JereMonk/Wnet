@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-def build_Unet(K,stages,filters,input_size,type,last_layer_activation):
+def build_Unet(K,stages,filters,input_size,type):
 
   #k_initializer = tf.random_normal_initializer(mean=0.0, stddev=0.02, seed=None)
 
