@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-def build_Unet(K,stages,filters,input_size,type):
+def build_Unet(K,stages,filters,input_size,type,last_layer_activation):
 
   #k_initializer = tf.random_normal_initializer(mean=0.0, stddev=0.02, seed=None)
 
@@ -59,10 +59,10 @@ def build_Unet(K,stages,filters,input_size,type):
 
   if(type == 'encoder'):
     x = tf.keras.layers.Conv2D(filters=K,kernel_size=(1,1),strides=(1,1),padding='same')(x)
-    x = tf.keras.layers.Softmax(axis=-1)(x)
+   
   else:
     x = tf.keras.layers.Conv2D(filters=3,kernel_size=(1,1),strides=(1,1),padding='same')(x)
-    x= tf.keras.layers.Activation('sigmoid')(x)
+  x= tf.keras.layers.Activation(last_layer_activation)(x)
 
   model = tf.keras.Model(inputs=inputs, outputs=x)
 
