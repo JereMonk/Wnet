@@ -1,4 +1,4 @@
-from Wnet import ncut_loss
+import ncut_loss
 import tensorflow as tf
 
 
