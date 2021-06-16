@@ -49,11 +49,11 @@ def main(arg):
     ckpts=[]
 
     if('checkpoint' in os.listdir(EXP_FOLDER)):
-        with open("checkpoint", 'r') as stream:
+        with open(EXP_FOLDER+"/checkpoint", 'r') as stream:
             try:
                 ckpts = yaml.safe_load(stream)
                 last_ckpt = ckpts["model_checkpoint_path"]
-                wn.load_weights(last_ckpt)
+                wn.load_weights(EXP_FOLDER+'/'+last_ckpt)
                 start_iter = int(last_ckpt.replace('ckpt',''))
 
             except yaml.YAMLError as exc:
