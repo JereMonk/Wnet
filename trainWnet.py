@@ -35,6 +35,7 @@ def main(arg):
     IMG_PERIOD =int( custom_data["IMG_PERIOD"])
     TEST_PERIOD = int(custom_data["TEST_PERIOD"])
 
+    RECONSTRUCTION_LOSS_WEIGHT = int(custom_data["RECONSTRUCTION_LOSS_WEIGHT"])
 
     generator_train = get_generator(TRAIN_DATASET,INPUT_DIM,IMS_PER_BATCH,SUBCATS)
     generator_test = get_generator(TEST_DATASET,INPUT_DIM,IMS_PER_BATCH,SUBCATS)
@@ -70,7 +71,7 @@ def main(arg):
         loss_fn_reconstruction = tf.keras.losses.MeanSquaredError()
     )
 
-    training(model=wn,train_dataset=generator_train,test_dataset=generator_test,max_iter=MAX_ITER,start_iter=start_iter,base_lr=BASE_LR,ckpt_freq=CHECKPOINT_PERIOD,img_freq=IMG_PERIOD,dir_path=EXP_FOLDER,solver_steps=STEPS,test_freq=TEST_PERIOD)
+    training(model=wn,train_dataset=generator_train,test_dataset=generator_test,max_iter=MAX_ITER,start_iter=start_iter,base_lr=BASE_LR,ckpt_freq=CHECKPOINT_PERIOD,img_freq=IMG_PERIOD,dir_path=EXP_FOLDER,solver_steps=STEPS,test_freq=TEST_PERIOD,reconstruction_loss_weight=RECONSTRUCTION_LOSS_WEIGHT)
    
   
 

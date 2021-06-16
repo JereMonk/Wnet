@@ -18,7 +18,7 @@ def set_learning_rate(step_counter,model,base_lr,steps):
         new_lr = base_lr/100
     model.optimizer.lr = new_lr
     
-def training(model,train_dataset,test_dataset,max_iter,start_iter,base_lr,ckpt_freq,img_freq,dir_path,solver_steps,test_freq):
+def training(model,train_dataset,test_dataset,max_iter,start_iter,base_lr,ckpt_freq,img_freq,dir_path,solver_steps,test_freq,reconstruction_loss_weight):
   
     ##TRAIN
     total_train_loss_encoder = []
@@ -38,11 +38,11 @@ def training(model,train_dataset,test_dataset,max_iter,start_iter,base_lr,ckpt_f
 
         
 
-        for step, x_batch_train in enumerate(train_dataset):
+        for _, x_batch_train in enumerate(train_dataset):
             step_counter+=1
             set_learning_rate(step_counter,model,base_lr,solver_steps)
 
-            train_losses = model.train_step(x_batch_train)
+            train_losses = model.train_step(x_batch_train,reconstruction_loss_weight)
 
             train_losses_encoder=train_losses["loss_encoder"]
             train_losses_decoder=train_losses["loss_decoder"]
@@ -57,7 +57,7 @@ def training(model,train_dataset,test_dataset,max_iter,start_iter,base_lr,ckpt_f
                 final_train_loss_decoder = np.mean(np.array(total_train_loss_decoder))
                 final_train_loss_encoder = np.mean(np.array(total_train_loss_encoder))
                 
-                print("step "+str(step) ) 
+                print("step "+str(step_counter) ) 
                 print("TRAIN LOSS ENCODER : ", final_train_loss_encoder)
                 print("TRAIN LOSS DECODER : ", final_train_loss_decoder)
                 total_train_loss_encoder = []
@@ -70,6 +70,10 @@ def training(model,train_dataset,test_dataset,max_iter,start_iter,base_lr,ckpt_f
 
             if step_counter%img_freq==0:
                 image_ref= tf.expand_dims(x_batch_train[0],0)
+
+                img = rescale(x_batch_train[0])
+                Image.fromarray(img).save(dir_path+"/image_step"+ str(step_counter)+"_.png")
+
                 res = model(image_ref).numpy()[0]
                 res = rescale(res)
                 Image.fromarray(res).save(dir_path+"/reconstruction_step"+ str(step_counter)+"_.png")
@@ -79,6 +83,7 @@ def training(model,train_dataset,test_dataset,max_iter,start_iter,base_lr,ckpt_f
                 ag = ag.numpy()
                 ag = ag *255 /ag.max()
                 Image.fromarray(ag).convert("L").save(dir_path+"/segmentation_step"+ str(step_counter)+"_.png")
+
 
 
             if step_counter%test_freq==0:

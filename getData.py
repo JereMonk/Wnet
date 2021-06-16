@@ -15,6 +15,10 @@ def my_to_bbox(polygon, allow_unsafe=False):
             
         xmin = max(0,xmin)
         ymin = max(0,ymin)
+
+        xmax= min(polygon.image_size[0],xmax)
+        ymax = max(polygon.image_size[1],ymax)
+
         
         return BBox(
             label=polygon.label,
