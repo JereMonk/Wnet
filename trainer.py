@@ -18,9 +18,12 @@ def set_learning_rate(step_counter,model,base_lr,steps):
         new_lr = base_lr/100
     model.optimizer.lr = new_lr
     
-def training(model,train_dataset,test_dataset,max_iter,start_iter,base_lr,ckpt_freq,img_freq,dir_path,solver_steps):
+def training(model,train_dataset,test_dataset,max_iter,start_iter,base_lr,ckpt_freq,img_freq,dir_path,solver_steps,test_freq):
   
-    
+    ##TRAIN
+    total_train_loss_encoder = []
+    total_train_loss_decoder = []
+
     step_counter=start_iter
     writer = tf.summary.create_file_writer(dir_path)
     
@@ -33,9 +36,7 @@ def training(model,train_dataset,test_dataset,max_iter,start_iter,base_lr,ckpt_f
         print("Learning rate" +str(model.optimizer.lr))
 
 
-        ##TRAIN
-        total_train_loss_encoder = []
-        total_train_loss_decoder = []
+        
 
         for step, x_batch_train in enumerate(train_dataset):
             step_counter+=1
@@ -50,13 +51,22 @@ def training(model,train_dataset,test_dataset,max_iter,start_iter,base_lr,ckpt_f
             total_train_loss_decoder.append(train_losses_decoder.numpy())
 
             if step_counter%ckpt_freq ==0:
-            
                 model.save_weights(dir_path+"/ckpt"+str(step_counter))
             
-            if step_counter%50==0:
+            if step_counter%1==0:
+                final_train_loss_decoder = np.mean(np.array(total_train_loss_decoder))
+                final_train_loss_encoder = np.mean(np.array(total_train_loss_encoder))
+                
                 print("step "+str(step) ) 
-                print('enc loss ',train_losses_encoder)
-                print('dec loss ' ,train_losses_decoder)
+                print("TRAIN LOSS ENCODER : ", final_train_loss_encoder)
+                print("TRAIN LOSS DECODER : ", final_train_loss_decoder)
+                total_train_loss_encoder = []
+                total_train_loss_decoder = []
+
+                with writer.as_default():
+                    tf.summary.scalar('training loss encoder', final_train_loss_encoder, step=step_counter)
+                    tf.summary.scalar('training loss decoder', final_train_loss_decoder, step=step_counter)
+                    tf.summary.scalar('training loss', final_train_loss_encoder+final_train_loss_decoder, step=step_counter)
 
             if step_counter%img_freq==0:
                 image_ref= tf.expand_dims(x_batch_train[0],0)
@@ -71,43 +81,37 @@ def training(model,train_dataset,test_dataset,max_iter,start_iter,base_lr,ckpt_f
                 Image.fromarray(ag).convert("L").save(dir_path+"/segmentation_step"+ str(step_counter)+"_.png")
 
 
-        final_train_loss_decoder = np.mean(np.array(total_train_loss_decoder))
-        final_train_loss_encoder = np.mean(np.array(total_train_loss_encoder))
+            if step_counter%test_freq==0:
 
-        print("TRAIN LOSS ENCODER : ", final_train_loss_encoder)
-        print("TRAIN LOSS DECODER : ", final_train_loss_decoder)
+                print('START TEST')
+                total_test_loss_encoder = []
+                total_test_loss_decoder = []
+
+                for _, x_batch_test in enumerate(test_dataset):
+
+                    test_losses = model.test_step(x_batch_test)
+                    test_losses_encoder=test_losses["loss_encoder"]
+                    test_losses_decoder=test_losses["loss_decoder"]
+
+                    total_test_loss_encoder.append(test_losses_encoder)
+                    total_test_loss_decoder.append(test_losses_decoder)
+
+                final_test_loss_decoder = np.mean(np.array(total_test_loss_decoder.numpy()))
+                final_test_loss_encoder = np.mean(np.array(total_test_loss_encoder.numpy()))
+
+                print("TEST LOSS ENCODER : ", final_test_loss_encoder)
+                print("TEST LOSS DECODER : ", final_test_loss_decoder)
+
+                with writer.as_default():
+                    tf.summary.scalar('test loss encoder', final_test_loss_encoder, step=step_counter)
+                    tf.summary.scalar('test loss decoder', final_test_loss_decoder, step=step_counter)
+                    tf.summary.scalar('test loss', final_test_loss_decoder+final_test_loss_encoder, step=step_counter)
+
+        
 
 
 
-     ##TEST
+
     
-    print('START TEST')
-
-    total_test_loss_encoder = []
-    total_test_loss_decoder = []
-
-    for _, x_batch_test in enumerate(test_dataset):
-
-        test_losses = model.test_step(x_batch_test)
-        test_losses_encoder=test_losses["loss_encoder"]
-        test_losses_decoder=test_losses["loss_decoder"]
-
-        total_test_loss_encoder.append(test_losses_encoder)
-        total_test_loss_decoder.append(test_losses_decoder)
-
-    final_test_loss_decoder = np.mean(np.array(total_test_loss_decoder.numpy()))
-    final_test_loss_encoder = np.mean(np.array(total_test_loss_encoder.numpy()))
-
-    print("TEST LOSS ENCODER : ", final_test_loss_encoder)
-    print("TEST LOSS DECODER : ", final_test_loss_decoder)
-
     
-    with writer.as_default():
-        tf.summary.scalar('training loss encoder', final_train_loss_encoder, step=step_counter)
-        tf.summary.scalar('training loss decoder', final_train_loss_decoder, step=step_counter)
-        tf.summary.scalar('training loss', final_train_loss_encoder+final_train_loss_decoder, step=step_counter)
-
-        tf.summary.scalar('test loss encoder', final_test_loss_encoder, step=step_counter)
-        tf.summary.scalar('test loss decoder', final_test_loss_decoder, step=step_counter)
-        tf.summary.scalar('test loss', final_test_loss_decoder+final_test_loss_encoder, step=step_counter)
     

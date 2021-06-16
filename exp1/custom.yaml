@@ -1,9 +1,9 @@
-TRAIN_DATASET: "/home/ubuntu/shared/data/meta/annotations/gold_standard/2021-06/parts_2021-06_train.json"
-TEST_DATASET: "/home/ubuntu/shared/data/meta/annotations/gold_standard/2021-06/parts_2021-06_train.json"
+TRAIN_DATASET: "/shared/data/meta/annotations/gold_standard/2021-06/parts_2021-06_train.json"
+TEST_DATASET: "/shared/data/meta/annotations/gold_standard/2021-06/parts_2021-06_train.json"
 SUBCATS: ["bumper_back","bumper_front","door_back_left","door_back_right","door_front_left","door_front_right","fender_back_left","fender_back_right","fender_front_left","fender_front_right"] 
 SOLVER:
-  STEPS: [1000, 2000]
-  MAX_ITER: 120000
+  STEPS: [1000, 20000]
+  MAX_ITER: 50000
   IMS_PER_BATCH: 1
   BASE_LR: 0.03
   CHECKPOINT_PERIOD: 10000

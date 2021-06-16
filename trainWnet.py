@@ -7,11 +7,12 @@ from ncut_loss import compute_soft_ncuts
 import numpy as np
 import tensorflow as tf
 from trainer import training 
+import os
 
 def main(arg):
 
     EXP_FOLDER= arg[0]
-    START_ITER = int(arg[1])
+
     print(arg[0])
 
     with open(EXP_FOLDER+"/custom.yaml", 'r') as stream:
@@ -29,8 +30,10 @@ def main(arg):
     IMS_PER_BATCH = int(custom_data["SOLVER"]["IMS_PER_BATCH"])
     BASE_LR = float(custom_data["SOLVER"]["BASE_LR"])
     STEPS = [int(custom_data["SOLVER"]["STEPS"][0]),int(custom_data["SOLVER"]["STEPS"][1])]
-    CHECKPOINT_PERIOD = int(custom_data["SOLVER"]["CHECKPOINT_PERIOD"])
-    IMG_PERIOD =int( custom_data["SOLVER"]["IMG_PERIOD"])
+    
+    CHECKPOINT_PERIOD = int(custom_data["CHECKPOINT_PERIOD"])
+    IMG_PERIOD =int( custom_data["IMG_PERIOD"])
+    TEST_PERIOD = int(custom_data["TEST_PERIOD"])
 
 
     generator_train = get_generator(TRAIN_DATASET,INPUT_DIM,IMS_PER_BATCH,SUBCATS)
@@ -41,6 +44,23 @@ def main(arg):
     decoder = build_Unet(K=K,stages = STAGES,filters = FILTERS,type='decoder',input_size=INPUT_DIM)
     wn = Wnet(encoder,decoder,(INPUT_DIM,INPUT_DIM))
 
+    ## Load weights
+    start_iter=0
+    ckpts=[]
+
+    if('checkpoint' in os.listdir(EXP_FOLDER)):
+        with open("checkpoint", 'r') as stream:
+            try:
+                ckpts = yaml.safe_load(stream)
+                last_ckpt = ckpts["model_checkpoint_path"]
+                wn.load_weights(last_ckpt)
+                start_iter = int(last_ckpt.replace('ckpt',''))
+
+            except yaml.YAMLError as exc:
+                print(exc)
+                  
+    print('Starting from iter : ', start_iter)
+
     
 
     # Compile the model
@@ -50,7 +70,7 @@ def main(arg):
         loss_fn_reconstruction = tf.keras.losses.MeanSquaredError()
     )
 
-    training(model=wn,train_dataset=generator_train,test_dataset=generator_test,max_iter=MAX_ITER,start_iter=START_ITER,base_lr=BASE_LR,ckpt_freq=CHECKPOINT_PERIOD,img_freq=IMG_PERIOD,dir_path=EXP_FOLDER,solver_steps=STEPS)
+    training(model=wn,train_dataset=generator_train,test_dataset=generator_test,max_iter=MAX_ITER,start_iter=start_iter,base_lr=BASE_LR,ckpt_freq=CHECKPOINT_PERIOD,img_freq=IMG_PERIOD,dir_path=EXP_FOLDER,solver_steps=STEPS,test_freq=TEST_PERIOD)
    
   
 
