@@ -89,7 +89,7 @@ class DataGenerator(tf.keras.utils.Sequence):
         'Generates data containing batch_size samples' # X : (n_samples, *dim, n_channels)
         # Initialization
         X = np.empty((self.batch_size, *self.dim, self.n_channels),dtype=np.float32)
-        #y = np.empty((self.batch_size), dtype=int)
+       
 
         # Generate data
         for i, ID in enumerate(list_IDs_temp):
