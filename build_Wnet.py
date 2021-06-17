@@ -37,7 +37,7 @@ class Wnet(tf.keras.Model):
 
         result_encoder = self.encoder(image)
         result_decoder = self.decoder(result_encoder)
-        loss_decoder = self.loss_fn_reconstruction(image,result_decoder)
+        loss_decoder = reconstruction_loss_weight*self.loss_fn_reconstruction(image,result_decoder)
         loss_encoder = self.loss_fn_segmentation(image,result_encoder,self.neighbour_filter)
 
         return {
