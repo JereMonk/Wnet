@@ -36,7 +36,7 @@ def main(arg):
     TEST_PERIOD = int(custom_data["TEST_PERIOD"])
 
     RECONSTRUCTION_LOSS_WEIGHT = int(custom_data["RECONSTRUCTION_LOSS_WEIGHT"])
-
+    print('RECONSTRUCTION_LOSS_WEIGHT',RECONSTRUCTION_LOSS_WEIGHT)
     generator_train = get_generator(TRAIN_DATASET,INPUT_DIM,IMS_PER_BATCH,SUBCATS)
     generator_test = get_generator(TEST_DATASET,INPUT_DIM,IMS_PER_BATCH,SUBCATS)
     
@@ -78,5 +78,3 @@ def main(arg):
 if __name__ == "__main__":
     
     main(sys.argv[1:])
-
-
