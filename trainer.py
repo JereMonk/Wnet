@@ -8,17 +8,16 @@ import PIL
 def rescale(image):
     return( np.array(((image+1)/2)*255 ).astype("uint8") )
 
-def set_learning_rate(step_counter,model,base_lr,steps):
+def set_learning_rate(step_counter,model,base_lr,steps,decay_step,decay_rate):
     
-    if(step_counter<=steps[0]):
+    if(step_counter<=decay_step):
         new_lr = base_lr
-    elif (step_counter>steps[0] and step_counter<=steps[1] ):
-        new_lr = base_lr/10
+    
     else:
-        new_lr = base_lr/100
+        new_lr = base_lr**(decay_rate*(step_counter//decay_step))
     model.optimizer.lr = new_lr
     
-def training(model,train_dataset,test_dataset,max_iter,start_iter,base_lr,ckpt_freq,img_freq,dir_path,solver_steps,test_freq,reconstruction_loss_weight):
+def training(model,train_dataset,test_dataset,max_iter,start_iter,base_lr,ckpt_freq,img_freq,dir_path,solver_steps,test_freq,reconstruction_loss_weight,decay_step,decay_rate):
   
     ##TRAIN
     total_train_loss_encoder = []
@@ -40,7 +39,7 @@ def training(model,train_dataset,test_dataset,max_iter,start_iter,base_lr,ckpt_f
 
         for _, x_batch_train in enumerate(train_dataset):
             step_counter+=1
-            set_learning_rate(step_counter,model,base_lr,solver_steps)
+            set_learning_rate(step_counter,model,base_lr,solver_steps,decay_step=decay_step,decay_rate=decay_rate)
 
             train_losses = model.train_step(x_batch_train,reconstruction_loss_weight)
 

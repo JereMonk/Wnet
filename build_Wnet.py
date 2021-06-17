@@ -48,33 +48,31 @@ class Wnet(tf.keras.Model):
 
     @tf.function
     def train_step(self, batch_data,reconstruction_loss_weight):
+        
         image = batch_data
         
-        with tf.GradientTape(persistent=True) as tape:
-          
+        with tf.GradientTape() as tape:
           result_encoder = self.encoder(image)
-          result_decoder = self.decoder(result_encoder)
-          loss_decoder = reconstruction_loss_weight*self.loss_fn_reconstruction(image,result_decoder)
           loss_encoder = self.loss_fn_segmentation(image,result_encoder,self.neighbour_filter)
-   
-          
-          
+    
         grads_encoder_1 = tape.gradient(loss_encoder, self.encoder.trainable_variables)
-        grads_2 = tape.gradient(loss_decoder, self.encoder.trainable_variables+self.decoder.trainable_variables)
-        
-        ###grads_decoder = tape.gradient(loss_decoder, self.decoder.trainable_variables)
-
-   
+          
         self.optimizer.apply_gradients(
             zip(grads_encoder_1, self.encoder.trainable_variables)
         )
+
+
+        with tf.GradientTape() as tape:
+          result_encoder = self.encoder(image)
+          result_decoder = self.decoder(result_encoder)
+          loss_decoder = reconstruction_loss_weight*self.loss_fn_reconstruction(image,result_decoder)
+          
+        grads_2 = tape.gradient(loss_decoder, self.encoder.trainable_variables+self.decoder.trainable_variables)
         self.optimizer.apply_gradients(
             zip(grads_2, self.encoder.trainable_variables+self.decoder.trainable_variables)
         )
         
-        ##self.optimizer.apply_gradients(
-        ##    zip(grads_decoder, self.decoder.trainable_variables)
-        ##)
+      
 
         return {
             "loss_encoder": loss_encoder,

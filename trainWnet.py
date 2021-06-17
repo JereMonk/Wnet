@@ -37,6 +37,9 @@ def main(arg):
 
     USE_DROPOUT = bool(int(custom_data["USE_DROPOUT"]))
 
+    DECAY_STEP = int(custom_data["SOLVER"]["DECAY_STEP"])
+    DECAY_RATE= int(custom_data["SOLVER"]["DECAY_RATE"])
+
     RECONSTRUCTION_LOSS_WEIGHT = int(custom_data["RECONSTRUCTION_LOSS_WEIGHT"])
     print('RECONSTRUCTION_LOSS_WEIGHT',RECONSTRUCTION_LOSS_WEIGHT)
     generator_train = get_generator(TRAIN_DATASET,INPUT_DIM,IMS_PER_BATCH,SUBCATS)
@@ -73,7 +76,7 @@ def main(arg):
         loss_fn_reconstruction = tf.keras.losses.MeanSquaredError()
     )
 
-    training(model=wn,train_dataset=generator_train,test_dataset=generator_test,max_iter=MAX_ITER,start_iter=start_iter,base_lr=BASE_LR,ckpt_freq=CHECKPOINT_PERIOD,img_freq=IMG_PERIOD,dir_path=EXP_FOLDER,solver_steps=STEPS,test_freq=TEST_PERIOD,reconstruction_loss_weight=RECONSTRUCTION_LOSS_WEIGHT)
+    training(model=wn,train_dataset=generator_train,test_dataset=generator_test,max_iter=MAX_ITER,start_iter=start_iter,base_lr=BASE_LR,ckpt_freq=CHECKPOINT_PERIOD,img_freq=IMG_PERIOD,dir_path=EXP_FOLDER,solver_steps=STEPS,test_freq=TEST_PERIOD,reconstruction_loss_weight=RECONSTRUCTION_LOSS_WEIGHT,decay_step=DECAY_STEP,decay_rate=DECAY_RATE)
    
   
 
