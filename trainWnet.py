@@ -35,14 +35,16 @@ def main(arg):
     IMG_PERIOD =int( custom_data["IMG_PERIOD"])
     TEST_PERIOD = int(custom_data["TEST_PERIOD"])
 
+    USE_DROPOUT = bool(int(custom_data["USE_DROPOUT"]))
+
     RECONSTRUCTION_LOSS_WEIGHT = int(custom_data["RECONSTRUCTION_LOSS_WEIGHT"])
     print('RECONSTRUCTION_LOSS_WEIGHT',RECONSTRUCTION_LOSS_WEIGHT)
     generator_train = get_generator(TRAIN_DATASET,INPUT_DIM,IMS_PER_BATCH,SUBCATS)
     generator_test = get_generator(TEST_DATASET,INPUT_DIM,IMS_PER_BATCH,SUBCATS)
     
 
-    encoder = build_Unet(K=K,stages = STAGES,filters = FILTERS,type='encoder',input_size=INPUT_DIM)
-    decoder = build_Unet(K=K,stages = STAGES,filters = FILTERS,type='decoder',input_size=INPUT_DIM)
+    encoder = build_Unet(K=K,stages = STAGES,filters = FILTERS,type='encoder',input_size=INPUT_DIM,use_dropout=USE_DROPOUT)
+    decoder = build_Unet(K=K,stages = STAGES,filters = FILTERS,type='decoder',input_size=INPUT_DIM,use_dropout=USE_DROPOUT)
     wn = Wnet(encoder,decoder,(INPUT_DIM,INPUT_DIM))
 
     ## Load weights

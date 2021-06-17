@@ -8,6 +8,7 @@ class Wnet(tf.keras.Model):
         encoder,
         decoder,
         input_shape,
+        
 
     ):
         super(Wnet, self).__init__()
