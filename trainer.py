@@ -67,6 +67,7 @@ def training(model,train_dataset,test_dataset,max_iter,start_iter,base_lr,ckpt_f
                     tf.summary.scalar('training loss encoder', final_train_loss_encoder, step=step_counter)
                     tf.summary.scalar('training loss decoder', final_train_loss_decoder, step=step_counter)
                     tf.summary.scalar('training loss', final_train_loss_encoder+final_train_loss_decoder, step=step_counter)
+                    tf.summary.scalar('learning rate',model.optimizer.lr , step=step_counter)
 
             if step_counter%img_freq==0:
                 image_ref= tf.expand_dims(x_batch_train[0],0)
