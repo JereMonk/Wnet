@@ -17,7 +17,7 @@ def my_to_bbox(polygon, allow_unsafe=False):
         ymin = max(0,ymin)
 
         xmax= min(polygon.image_size[0],xmax)
-        ymax = max(polygon.image_size[1],ymax)
+        ymax = min(polygon.image_size[1],ymax)
 
         
         return BBox(
@@ -106,7 +106,7 @@ class DataGenerator(tf.keras.utils.Sequence):
 
 def get_generator(path,size,batch_size,to_keep):
 
-    dataset_parts = Dataset.from_coco(path)
+    dataset_parts = Dataset.from_coco(path,"")
     dataset_filtered = dataset_parts.filter_images_with_cats(keep=to_keep).filter_cats(keep=to_keep)
     generator = DataGenerator(dataset_filtered,batch_size=batch_size,dim=(size,size))
 

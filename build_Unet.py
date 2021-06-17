@@ -28,7 +28,8 @@ def build_Unet(K,stages,filters,input_size,type,use_dropout):
     x = tf.keras.layers.MaxPool2D(pool_size=(2,2),padding='same')(x)
 
     if (use_dropout):
-        x=tf.nn.dropout(x,0.5)
+        x = tf.keras.layers.Dropout(0.5)(x)
+       
     
     filters *=2
     
@@ -52,7 +53,7 @@ def build_Unet(K,stages,filters,input_size,type,use_dropout):
     x = tf.keras.layers.Concatenate(axis=3)([y, u])
 
     if (use_dropout):
-        x=tf.nn.dropout(x,0.5)
+        x = tf.keras.layers.Dropout(0.5)(x)
     
     x= tf.keras.layers.Conv2D(filters=filters,kernel_size=(3,3),strides=(1,1),padding='same')(x)
     x = tf.keras.layers.BatchNormalization()(x)
