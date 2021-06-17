@@ -59,7 +59,7 @@ class DataGenerator(tf.keras.utils.Sequence):
         ann = imds.anns["polygons"][ids[1]]
         img_crop = imds.image.crop(my_to_bbox(ann)).resize(self.dim)
         
-
+        #return(img_crop.rgb)
         return(((img_crop.rgb/255)*2)-1)
         
     def __len__(self):
@@ -88,7 +88,7 @@ class DataGenerator(tf.keras.utils.Sequence):
     def __data_generation(self, list_IDs_temp):
         'Generates data containing batch_size samples' # X : (n_samples, *dim, n_channels)
         # Initialization
-        X = np.empty((self.batch_size, *self.dim, self.n_channels),dtype=int)
+        X = np.empty((self.batch_size, *self.dim, self.n_channels),dtype=np.float32)
         #y = np.empty((self.batch_size), dtype=int)
 
         # Generate data
