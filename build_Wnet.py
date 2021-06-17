@@ -32,7 +32,7 @@ class Wnet(tf.keras.Model):
       return output
 
     @tf.function
-    def test_step(self,batch_data):
+    def test_step(self,batch_data,reconstruction_loss_weight):
         image= batch_data
 
         result_encoder = self.encoder(image)

@@ -94,7 +94,7 @@ def training(model,train_dataset,test_dataset,max_iter,start_iter,base_lr,ckpt_f
 
                 for _, x_batch_test in enumerate(test_dataset):
 
-                    test_losses = model.test_step(x_batch_test)
+                    test_losses = model.test_step(x_batch_test,reconstruction_loss_weight)
                     test_losses_encoder=test_losses["loss_encoder"]
                     test_losses_decoder=test_losses["loss_decoder"]
 
