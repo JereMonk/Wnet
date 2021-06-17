@@ -6,7 +6,7 @@ import PIL
 
 
 def rescale(image):
-    return( (((image+1)/2)*255 ).astype("uint8") )
+    return( np.array(((image.numpy()+1)/2)*255 ).astype("uint8") )
 
 def set_learning_rate(step_counter,model,base_lr,steps):
     
