@@ -111,12 +111,3 @@ def training(model,train_dataset,test_dataset,max_iter,start_iter,base_lr,ckpt_f
                     tf.summary.scalar('test loss encoder', final_test_loss_encoder, step=step_counter)
                     tf.summary.scalar('test loss decoder', final_test_loss_decoder, step=step_counter)
                     tf.summary.scalar('test loss', final_test_loss_decoder+final_test_loss_encoder, step=step_counter)
-
-        
-
-
-
-
-    
-    
-    
