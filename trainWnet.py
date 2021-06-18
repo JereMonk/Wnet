@@ -46,8 +46,11 @@ def main(arg):
     generator_test = get_generator(TEST_DATASET,INPUT_DIM,IMS_PER_BATCH,SUBCATS)
     
 
-    encoder = build_Unet(K=K,stages = STAGES,filters = FILTERS,type='encoder',input_size=INPUT_DIM,use_dropout=USE_DROPOUT)
-    decoder = build_Unet(K=K,stages = STAGES,filters = FILTERS,type='decoder',input_size=INPUT_DIM,use_dropout=USE_DROPOUT)
+    #encoder = build_Unet(K=K,stages = STAGES,filters = FILTERS,type='encoder',input_size=INPUT_DIM,use_dropout=USE_DROPOUT)
+    #decoder = build_Unet(K=K,stages = STAGES,filters = FILTERS,type='decoder',input_size=INPUT_DIM,use_dropout=USE_DROPOUT)
+    
+    encoder = build_Unet.Unet(K=K,type='encoder',input_size=INPUT_DIM,do_dropout=USE_DROPOUT)
+    decoder = build_Unet.Unet(K=K,type='decoder',input_size=INPUT_DIM,do_dropout=USE_DROPOUT)
     wn = Wnet(encoder,decoder,(INPUT_DIM,INPUT_DIM))
 
     ## Load weights
