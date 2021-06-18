@@ -71,7 +71,7 @@ def main(arg):
 
     # Compile the model
     wn.compile(
-        optimizer=tf.keras.optimizers.SGD(learning_rate=BASE_LR),
+        optimizer=tf.keras.optimizers.Adam(learning_rate=BASE_LR),
         loss_fn_segmentation = compute_soft_ncuts,
         loss_fn_reconstruction = tf.keras.losses.MeanSquaredError()
     )
