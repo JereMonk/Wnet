@@ -62,7 +62,7 @@ class DamagedDataGenerator(tf.keras.utils.Sequence):
        
         img = np.array(img_crop.rgb/255,dtype=np.dtype('float32'))
         
-        return ( img )
+        return(((img)*2)-1)
         
     def __len__(self):
        
@@ -215,6 +215,8 @@ class NonDamagedDataGenerator(tf.keras.utils.Sequence):
        
         img = np.array(img_crop.rgb/255,dtype=np.dtype('float32'))
         
+        return(((img)*2)-1)
+
         return ( img )
         
     def __len__(self):
@@ -377,7 +379,7 @@ class MixedDataGenerator(tf.keras.utils.Sequence):
         
         img = np.array(img_crop.rgb/255,dtype=np.dtype('float32'))
         
-        return ( img )
+        return(((img)*2)-1)
         
     def __len__(self):
        

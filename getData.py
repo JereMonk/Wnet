@@ -95,7 +95,14 @@ class DataGenerator(tf.keras.utils.Sequence):
         for i, ID in enumerate(list_IDs_temp):
             # Store sample
             
-            X[i,] = self.load_image(self.map_id[ID])
+
+            
+            try:
+                X[i,] = self.load_image(self.map_id[ID])
+
+            except Exception as e:
+                X[i,] = np.zeros((*self.dim, self.n_channels))
+                print(str(e))
 
             # Store class
             #y[i] = self.labels[ID]
