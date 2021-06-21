@@ -45,13 +45,15 @@ def main(arg):
     DECAY_STEP = int(custom_data["SOLVER"]["DECAY_STEP"])
     DECAY_RATE= int(custom_data["SOLVER"]["DECAY_RATE"])
 
+    SIGMA= int(custom_data["INPUT"]["SIGMA"])
+
     RECONSTRUCTION_LOSS_WEIGHT = int(custom_data["RECONSTRUCTION_LOSS_WEIGHT"])
     print('RECONSTRUCTION_LOSS_WEIGHT',RECONSTRUCTION_LOSS_WEIGHT)
     
     
     ## DATA
-    generator_train = get_generator(json_paths=JSON_PATHS_TRAIN,dim=INPUT_DIM,batch_size=IMS_PER_BATCH)
-    generator_test = get_generator(json_paths=JSON_PATHS_TEST,dim=INPUT_DIM,batch_size=IMS_PER_BATCH)
+    generator_train = get_generator(json_paths=JSON_PATHS_TRAIN,dim=INPUT_DIM,batch_size=IMS_PER_BATCH,damaged=False,sigma=SIGMA)
+    generator_test = get_generator(json_paths=JSON_PATHS_TEST,dim=INPUT_DIM,batch_size=IMS_PER_BATCH,damaged=False,sigma=SIGMA)
     
 
     #encoder = build_Unet(K=K,stages = STAGES,filters = FILTERS,type='encoder',input_size=INPUT_DIM,use_dropout=USE_DROPOUT)
