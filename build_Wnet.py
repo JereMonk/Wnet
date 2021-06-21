@@ -1,6 +1,6 @@
 import ncut_loss
 import tensorflow as tf
-
+import tensorflow_addons as tfa
 
 class Wnet(tf.keras.Model):
     def __init__(
@@ -47,12 +47,13 @@ class Wnet(tf.keras.Model):
         }
 
     @tf.function
-    def train_step(self, batch_data,reconstruction_loss_weight):
+    def train_step(self, batch_data,reconstruction_loss_weight,sigma=0.00001):
         
         image = batch_data
+        image_blurred = tfa.image.gaussian_filter2d( image,(5,5),self.sigma)
         
         with tf.GradientTape() as tape:
-          result_encoder = self.encoder(image)
+          result_encoder = self.encoder(image_blurred)
           loss_encoder = self.loss_fn_segmentation(image,result_encoder,self.neighbour_filter)
     
         grads_encoder_1 = tape.gradient(loss_encoder, self.encoder.trainable_variables)
@@ -63,7 +64,7 @@ class Wnet(tf.keras.Model):
 
 
         with tf.GradientTape() as tape:
-          result_encoder = self.encoder(image)
+          result_encoder = self.encoder(image_blurred)
           result_decoder = self.decoder(result_encoder)
           loss_decoder = reconstruction_loss_weight*self.loss_fn_reconstruction(image,result_decoder)
           

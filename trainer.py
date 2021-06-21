@@ -17,7 +17,7 @@ def set_learning_rate(step_counter,model,base_lr,steps,decay_step,decay_rate):
         new_lr = base_lr**(decay_rate*(step_counter//decay_step))
     model.optimizer.lr = new_lr
     
-def training(model,train_dataset,test_dataset,max_iter,start_iter,base_lr,ckpt_freq,img_freq,dir_path,solver_steps,test_freq,reconstruction_loss_weight,decay_step,decay_rate):
+def training(model,train_dataset,test_dataset,max_iter,start_iter,base_lr,ckpt_freq,img_freq,dir_path,solver_steps,test_freq,reconstruction_loss_weight,decay_step,decay_rate,sigma):
   
     ##TRAIN
     total_train_loss_encoder = []
@@ -41,7 +41,7 @@ def training(model,train_dataset,test_dataset,max_iter,start_iter,base_lr,ckpt_f
             step_counter+=1
             set_learning_rate(step_counter,model,base_lr,solver_steps,decay_step=decay_step,decay_rate=decay_rate)
 
-            train_losses = model.train_step(x_batch_train,reconstruction_loss_weight)
+            train_losses = model.train_step(x_batch_train,reconstruction_loss_weight,sigma)
 
             train_losses_encoder=train_losses["loss_encoder"]
             train_losses_decoder=train_losses["loss_decoder"]
