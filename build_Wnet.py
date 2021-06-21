@@ -50,7 +50,7 @@ class Wnet(tf.keras.Model):
     def train_step(self, batch_data,reconstruction_loss_weight,sigma=0.00001):
         
         image = batch_data
-        image_blurred = tfa.image.gaussian_filter2d( image,(5,5),self.sigma)
+        image_blurred = tfa.image.gaussian_filter2d( image,(5,5),sigma)
         
         with tf.GradientTape() as tape:
           result_encoder = self.encoder(image_blurred)
