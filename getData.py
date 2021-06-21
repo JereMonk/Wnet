@@ -1,3 +1,11 @@
+import numpy as np
+from monk import BBox
+import tensorflow as tf
+from monk import Dataset
+import json
+import PIL
+from monk.utils.s3.s3path import S3Path
+
 class DataGenerator(tf.keras.utils.Sequence):
     
     def __init__(self,json_paths, batch_size=10, dim=(128,128), n_channels=3,shuffle=True,damaged=False):
@@ -62,7 +70,8 @@ class DataGenerator(tf.keras.utils.Sequence):
         img_crop = im.crop(bbox)
         img_crop = img_crop.resize(self.dim)
         
-        return(np.array(img_crop))
+        return(  ((((np.array(img_crop)/255)*2)-1)).astype(np.float32))
+        #return(np.array(img_crop).astype(np.float32))
         
     def __len__(self):
        
@@ -79,7 +88,7 @@ class DataGenerator(tf.keras.utils.Sequence):
         # Generate data
         X = self.__data_generation(list_IDs_temp)
 
-        return X
+        tf.convert_to_tensor(X,dtype=tf.float32)
 
     def on_epoch_end(self):
         'Updates indexes after each epoch'
@@ -90,7 +99,7 @@ class DataGenerator(tf.keras.utils.Sequence):
     def __data_generation(self, list_IDs_temp):
         'Generates data containing batch_size samples' # X : (n_samples, *dim, n_channels)
         # Initialization
-        X = np.empty((self.batch_size, *self.dim, self.n_channels),dtype=int)
+        X = np.empty((self.batch_size, *self.dim, self.n_channels),dtype=np.float32)
         #y = np.empty((self.batch_size), dtype=int)
 
         # Generate data
@@ -102,7 +111,7 @@ class DataGenerator(tf.keras.utils.Sequence):
             #y[i] = self.labels[ID]
 
         #return X, keras.utils.to_categorical(y, num_classes=self.n_classes)
-        return X
+        return tf.convert_to_tensor(X)
 
 def get_generator(json_paths,batch_size,size):
     
