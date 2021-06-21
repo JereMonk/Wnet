@@ -20,8 +20,12 @@ def main(arg):
         custom_data = yaml.safe_load(stream)
 
     INPUT_DIM = int(custom_data['INPUT']['DIM'])
-    TRAIN_DATASET = custom_data["TRAIN_DATASET"]
-    TEST_DATASET = custom_data["TEST_DATASET"]
+    
+    #TRAIN_DATASET = custom_data["TRAIN_DATASET"]
+    #TEST_DATASET = custom_data["TEST_DATASET"]
+
+    JSON_PATHS_TRAIN = custom_data["JSON_PATHS_TRAIN"]
+    JSON_PATHS_TEST = custom_data["JSON_PATHS_TEST"]
 
     SUBCATS = custom_data["SUBCATS"]
     K = int(custom_data["MODEL"]["K"])
@@ -43,8 +47,11 @@ def main(arg):
 
     RECONSTRUCTION_LOSS_WEIGHT = int(custom_data["RECONSTRUCTION_LOSS_WEIGHT"])
     print('RECONSTRUCTION_LOSS_WEIGHT',RECONSTRUCTION_LOSS_WEIGHT)
-    generator_train = get_generator(TRAIN_DATASET,INPUT_DIM,IMS_PER_BATCH,SUBCATS)
-    generator_test = get_generator(TEST_DATASET,INPUT_DIM,IMS_PER_BATCH,SUBCATS)
+    
+    
+    ## DATA
+    generator_train = get_generator(json_paths=JSON_PATHS_TRAIN,dim=INPUT_DIM,batch_size=IMS_PER_BATCH)
+    generator_test = get_generator(json_paths=JSON_PATHS_TEST,dim=INPUT_DIM,batch_size=IMS_PER_BATCH)
     
 
     #encoder = build_Unet(K=K,stages = STAGES,filters = FILTERS,type='encoder',input_size=INPUT_DIM,use_dropout=USE_DROPOUT)
