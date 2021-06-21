@@ -5,10 +5,10 @@ from monk import Dataset
 import json
 import PIL
 from monk.utils.s3.s3path import S3Path
-import tensorflow_addons as tfa
+
 class DataGenerator(tf.keras.utils.Sequence):
     
-    def __init__(self,json_paths, batch_size=10, dim=(128,128), n_channels=3,shuffle=True,damaged=False,sigma=0.00001):
+    def __init__(self,json_paths, batch_size=10, dim=(128,128), n_channels=3,shuffle=True,damaged=False):
         
         
         
@@ -17,7 +17,6 @@ class DataGenerator(tf.keras.utils.Sequence):
         self.batch_size = batch_size  
         self.n_channels = n_channels
         self.damaged=damaged
-        self.sigma=sigma
         
         jsons_data=[]
         
@@ -70,10 +69,8 @@ class DataGenerator(tf.keras.utils.Sequence):
         bbox =  data["part_bbox"]
         img_crop = im.crop(bbox)
         img_crop = img_crop.resize(self.dim)
-
         
-        
-        return( tfa.image.gaussian_filter2d( ((((np.array(img_crop)/255)*2)-1)).astype(np.float32),(5,5),self.sigma)) 
+        return(  ((((np.array(img_crop)/255)*2)-1)).astype(np.float32))
         #return(np.array(img_crop).astype(np.float32))
         
     def __len__(self):
