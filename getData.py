@@ -2,65 +2,74 @@ import numpy as np
 from monk import BBox
 import tensorflow as tf
 from monk import Dataset
-
-def my_to_bbox(polygon, allow_unsafe=False):
-        """ Get the smallest BBox encompassing the polygon """
-        xmin, ymin = np.inf, np.inf
-        xmax, ymax = -np.inf, -np.inf
-        for subpol in polygon.points:
-            xmin = min(xmin, *subpol[:, 0])
-            xmax = max(xmax, *subpol[:, 0])
-            ymin = min(ymin, *subpol[:, 1])
-            ymax = max(ymax, *subpol[:, 1])
-            
-        xmin = max(0,xmin)
-        ymin = max(0,ymin)
-
-        xmax= min(polygon.image_size[0],xmax)
-        ymax = min(polygon.image_size[1],ymax)
-
-        
-        return BBox(
-            label=polygon.label,
-            image_size=polygon.image_size,
-            xyxy=[xmin, ymin, xmax, ymax],
-            allow_unsafe=allow_unsafe,
-            attributes=polygon.attributes.copy(),
-        )
-
+import json
+import PIL
+from monk.utils.s3.s3path import S3Path
 class DataGenerator(tf.keras.utils.Sequence):
     
-    def __init__(self,dataset, batch_size=32, dim=(128,128), n_channels=3,shuffle=True):
-          
-        self.dataset=dataset
-        self.dim = dim ###
-        self.batch_size = batch_size  ##
-        self.list_IDs = np.arange(len(dataset)) ###
-        self.n_channels = n_channels ##
-        self.shuffle = shuffle ##
+    def __init__(self,json_paths, batch_size=10, dim=(128,128), n_channels=3,shuffle=True,damaged=False):
         
-        self.get_map_id()
-        self.on_epoch_end()
         
-        #self.labels = labels
-        #self.n_classes = n_classes
         
-    def get_map_id(self):
-        i=0
-        map_id ={}
-        for _,imds in enumerate(self.dataset):
-            for ann_id,ann in enumerate(imds.anns["polygons"]):
-                map_id[i]=[imds.id,ann_id]
-                i+=1
-        self.map_id = map_id
+        self.shuffle = shuffle 
+        self.dim = dim 
+        self.batch_size = batch_size  
+        self.n_channels = n_channels
+        self.damaged=damaged
         
-    def load_image(self,ids):
-        imds = self.dataset[ids[0]]
-        ann = imds.anns["polygons"][ids[1]]
-        img_crop = imds.image.crop(my_to_bbox(ann)).resize(self.dim)
+        jsons_data=[]
         
-        #return(img_crop.rgb)
-        return(((img_crop.rgb/255)*2)-1)
+        for json_path in json_paths:
+            with open(json_path) as f:
+                json_data = json.load(f)
+            jsons_data.append(json_data)
+            
+        self.filter_json(jsons_data,damaged)
+
+        
+        
+    def filter_json(self,jsons_data,damaged):
+        
+        
+        filtered_json =[]
+
+        for json_data in jsons_data :
+        
+            for i in range(0,len(json_data)):
+                
+                
+                if json_data[i]["repair_action"]=='not_damaged' and damaged==False :
+                    filtered_json.append(json_data[i])
+                elif json_data[i]["repair_action"]!='not_damaged' and json_data[i]["repair_action"]!=None and damaged==True and (json_data[i]["label"]=='scratch' or json_data[i]["label"]=='dent' ) :
+                    filtered_json.append(json_data[i])
+               
+        
+        self.filtered_json=filtered_json
+        self.list_IDs = np.arange(len(filtered_json)) 
+        self.indexes = np.arange(len(filtered_json))
+        if self.shuffle == True:
+            np.random.shuffle(self.indexes)
+        
+
+    
+    def load_image(self,id):
+        
+        data = self.filtered_json[id]
+        
+        
+        if('s3:/monk-client-images/' in data["path"]):
+            bucket = "monk-client-images"
+            key = data["path"].replace("s3:/monk-client-images/","")
+            s3 = S3Path(bucket,key)
+            im = PIL.Image.open(s3.download())
+        else:
+            im = PIL.Image.open(data["path"])
+        
+        bbox =  data["part_bbox"]
+        img_crop = im.crop(bbox)
+        img_crop = img_crop.resize(self.dim)
+        
+        return(np.array(img_crop).astype(np.float32))
         
     def __len__(self):
        
@@ -89,25 +98,21 @@ class DataGenerator(tf.keras.utils.Sequence):
         'Generates data containing batch_size samples' # X : (n_samples, *dim, n_channels)
         # Initialization
         X = np.empty((self.batch_size, *self.dim, self.n_channels),dtype=np.float32)
-       
+        #y = np.empty((self.batch_size), dtype=int)
 
         # Generate data
         for i, ID in enumerate(list_IDs_temp):
             # Store sample
-            
-            X[i,] = self.load_image(self.map_id[ID])
+            X[i,] = self.load_image(self.indexes[ID])
 
             # Store class
             #y[i] = self.labels[ID]
 
         #return X, keras.utils.to_categorical(y, num_classes=self.n_classes)
-        return tf.convert_to_tensor(X,dtype=tf.float32)
+        return tf.convert_to_tensor(X)
 
-
-def get_generator(path,size,batch_size,to_keep):
-
-    dataset_parts = Dataset.from_coco(path,"")
-    dataset_filtered = dataset_parts.filter_images_with_cats(keep=to_keep).filter_cats(keep=to_keep)
-    generator = DataGenerator(dataset_filtered,batch_size=batch_size,dim=(size,size))
+def get_generator(json_paths,batch_size,size):
+    
+    generator = DataGenerator(json_paths,batch_size=batch_size,dim=(size,size))
 
     return(generator)
