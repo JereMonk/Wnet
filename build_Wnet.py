@@ -1,7 +1,7 @@
 import ncut_loss
 import tensorflow as tf
 import tensorflow_addons as tfa
-
+import numpy as np
 class Wnet(tf.keras.Model):
     def __init__(
         self,
@@ -51,6 +51,10 @@ class Wnet(tf.keras.Model):
         
         image = batch_data
         image_blurred = tfa.image.gaussian_filter2d( image,(5,5),sigma)
+        noise = np.random.normal(0, .1, image.shape)
+        image_blurred = image_blurred + noise
+        image_blurred = tf.clip_by_value(image_blurred, clip_value_min=-1, clip_value_max=1)
+
         
         with tf.GradientTape() as tape:
           result_encoder = self.encoder(image_blurred)
