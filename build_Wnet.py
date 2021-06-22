@@ -47,11 +47,11 @@ class Wnet(tf.keras.Model):
         }
 
     @tf.function
-    def train_step(self, batch_data,reconstruction_loss_weight,sigma=0.00001):
+    def train_step(self, batch_data,reconstruction_loss_weight,sigma=0.00001,blur_kernel=(10,10),noise_amp=0):
         
         image = batch_data
-        image_blurred = tfa.image.gaussian_filter2d( image,(5,5),sigma)
-        noise = np.random.normal(0, .1, image.shape)
+        image_blurred = tfa.image.gaussian_filter2d( image,(blur_kernel,blur_kernel),sigma)
+        noise = np.random.normal(0, noise_amp, image.shape)
         image_blurred = image_blurred + noise
         image_blurred = tf.clip_by_value(image_blurred, clip_value_min=-1, clip_value_max=1)
 

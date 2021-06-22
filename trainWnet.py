@@ -46,6 +46,8 @@ def main(arg):
     DECAY_RATE= int(custom_data["SOLVER"]["DECAY_RATE"])
 
     SIGMA = int(custom_data['INPUT']['SIGMA'])
+    BLUR_KERNEL = int(custom_data['INPUT']['BLUR_KERNEL'])
+    NOISE_AMP = int(custom_data['INPUT']['NOISE_AMP'])
 
     RECONSTRUCTION_LOSS_WEIGHT = int(custom_data["RECONSTRUCTION_LOSS_WEIGHT"])
     print('RECONSTRUCTION_LOSS_WEIGHT',RECONSTRUCTION_LOSS_WEIGHT)
@@ -89,7 +91,7 @@ def main(arg):
         loss_fn_reconstruction = tf.keras.losses.MeanSquaredError()
     )
 
-    training(model=wn,train_dataset=generator_train,test_dataset=generator_test,max_iter=MAX_ITER,start_iter=start_iter,base_lr=BASE_LR,ckpt_freq=CHECKPOINT_PERIOD,img_freq=IMG_PERIOD,dir_path=EXP_FOLDER,solver_steps=STEPS,test_freq=TEST_PERIOD,reconstruction_loss_weight=RECONSTRUCTION_LOSS_WEIGHT,decay_step=DECAY_STEP,decay_rate=DECAY_RATE,sigma=SIGMA)
+    training(model=wn,train_dataset=generator_train,test_dataset=generator_test,max_iter=MAX_ITER,start_iter=start_iter,base_lr=BASE_LR,ckpt_freq=CHECKPOINT_PERIOD,img_freq=IMG_PERIOD,dir_path=EXP_FOLDER,solver_steps=STEPS,test_freq=TEST_PERIOD,reconstruction_loss_weight=RECONSTRUCTION_LOSS_WEIGHT,decay_step=DECAY_STEP,decay_rate=DECAY_RATE,sigma=SIGMA,blur_kernel=BLUR_KERNEL,noise_amp=NOISE_AMP)
    
   
 
