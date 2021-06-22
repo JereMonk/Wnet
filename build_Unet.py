@@ -78,7 +78,7 @@ def build_Unet(K,stages,filters,input_size,type,use_dropout):
 
 
 class Unet(tf.keras.Model):
-    def __init__(self,input_size,type,K,do_dropout=False,):
+    def __init__(self,input_size,type,K,do_dropout=False,l1_reg=0,l2_reg=0):
         super(Unet, self).__init__()
         
         self.do_dropout=do_dropout
@@ -92,92 +92,92 @@ class Unet(tf.keras.Model):
           self.inputs = tf.keras.Input(shape=(input_size,input_size,K))
 
 
-        self.conv11 = tf.keras.layers.Conv2D(filters=64,kernel_size=(3,3),strides=(1,1),padding='same',name='CONV11')
+        self.conv11 = tf.keras.layers.Conv2D(filters=64,kernel_size=(3,3),strides=(1,1),padding='same',name='CONV11',kernel_regularizer=tf.keras.regularizers.L1L2(l1=l1_reg, l2=l2_reg))
         self.BN11 = tf.keras.layers.BatchNormalization(name='BN11')
         self.ReLU11 = tf.keras.layers.ReLU()
 
-        self.conv12 = tf.keras.layers.Conv2D(filters=64,kernel_size=(3,3),strides=(1,1),padding='same',name='CONV12')
+        self.conv12 = tf.keras.layers.Conv2D(filters=64,kernel_size=(3,3),strides=(1,1),padding='same',name='CONV12',kernel_regularizer=tf.keras.regularizers.L1L2(l1=l1_reg, l2=l2_reg))
         self.BN12 = tf.keras.layers.BatchNormalization(name='BN12')
         self.ReLU12 = tf.keras.layers.ReLU()
         
         self.maxpool1 = tf.keras.layers.MaxPool2D(pool_size=(2,2),padding='same',name='MAXPOOL1')
  
-        self.conv21 = tf.keras.layers.Conv2D(filters=128,kernel_size=(3,3),strides=(1,1),padding='same',name='CONV21')
+        self.conv21 = tf.keras.layers.Conv2D(filters=128,kernel_size=(3,3),strides=(1,1),padding='same',name='CONV21',kernel_regularizer=tf.keras.regularizers.L1L2(l1=l1_reg, l2=l2_reg))
         self.BN21 = tf.keras.layers.BatchNormalization(name='BN21')
         self.ReLU21 = tf.keras.layers.ReLU()
 
-        self.conv22 = tf.keras.layers.Conv2D(filters=128,kernel_size=(3,3),strides=(1,1),padding='same',name='CONV22')
+        self.conv22 = tf.keras.layers.Conv2D(filters=128,kernel_size=(3,3),strides=(1,1),padding='same',name='CONV22',kernel_regularizer=tf.keras.regularizers.L1L2(l1=l1_reg, l2=l2_reg))
         self.BN22 = tf.keras.layers.BatchNormalization(name='BN22')
         self.ReLU22= tf.keras.layers.ReLU()
 
         self.maxpool2 = tf.keras.layers.MaxPool2D(pool_size=(2,2),padding='same',name='MAXPOOL2')
 
-        self.conv31 = tf.keras.layers.Conv2D(filters=256,kernel_size=(3,3),strides=(1,1),padding='same',name='CONV31')
+        self.conv31 = tf.keras.layers.Conv2D(filters=256,kernel_size=(3,3),strides=(1,1),padding='same',name='CONV31',kernel_regularizer=tf.keras.regularizers.L1L2(l1=l1_reg, l2=l2_reg))
         self.BN31 = tf.keras.layers.BatchNormalization(name='BN31')
         self.ReLU31 = tf.keras.layers.ReLU()
 
-        self.conv32 = tf.keras.layers.Conv2D(filters=256,kernel_size=(3,3),strides=(1,1),padding='same',name='CONV32')
+        self.conv32 = tf.keras.layers.Conv2D(filters=256,kernel_size=(3,3),strides=(1,1),padding='same',name='CONV32',kernel_regularizer=tf.keras.regularizers.L1L2(l1=l1_reg, l2=l2_reg))
         self.BN32 = tf.keras.layers.BatchNormalization(name='BN32')
         self.ReLU32 = tf.keras.layers.ReLU()
         
         self.maxpool3= tf.keras.layers.MaxPool2D(pool_size=(2,2),padding='same',name='MAXPOOL3')
 
-        self.conv41 = tf.keras.layers.Conv2D(filters=512,kernel_size=(3,3),strides=(1,1),padding='same',name='CONV41')
+        self.conv41 = tf.keras.layers.Conv2D(filters=512,kernel_size=(3,3),strides=(1,1),padding='same',name='CONV41',kernel_regularizer=tf.keras.regularizers.L1L2(l1=l1_reg, l2=l2_reg))
         self.BN41 = tf.keras.layers.BatchNormalization(name='BN41')
         self.ReLU41 = tf.keras.layers.ReLU()
 
-        self.conv42 = tf.keras.layers.Conv2D(filters=512,kernel_size=(3,3),strides=(1,1),padding='same',name='CONV42')
+        self.conv42 = tf.keras.layers.Conv2D(filters=512,kernel_size=(3,3),strides=(1,1),padding='same',name='CONV42',kernel_regularizer=tf.keras.regularizers.L1L2(l1=l1_reg, l2=l2_reg))
         self.BN42 = tf.keras.layers.BatchNormalization(name='BN42')
         self.ReLU42 = tf.keras.layers.ReLU()
 
         self.maxpool4= tf.keras.layers.MaxPool2D(pool_size=(2,2),padding='same',name='MAXPOOL3')
 
-        self.conv421 = tf.keras.layers.Conv2D(filters=1024,kernel_size=(3,3),strides=(1,1),padding='same',name='CONV41')
+        self.conv421 = tf.keras.layers.Conv2D(filters=1024,kernel_size=(3,3),strides=(1,1),padding='same',name='CONV41',kernel_regularizer=tf.keras.regularizers.L1L2(l1=l1_reg, l2=l2_reg))
         self.BN421 = tf.keras.layers.BatchNormalization(name='BN41')
         self.ReLU421 = tf.keras.layers.ReLU()
 
-        self.conv422 = tf.keras.layers.Conv2D(filters=1024,kernel_size=(3,3),strides=(1,1),padding='same',name='CONV42')
+        self.conv422 = tf.keras.layers.Conv2D(filters=1024,kernel_size=(3,3),strides=(1,1),padding='same',name='CONV42',kernel_regularizer=tf.keras.regularizers.L1L2(l1=l1_reg, l2=l2_reg))
         self.BN422 = tf.keras.layers.BatchNormalization(name='BN42')
         self.ReLU422 = tf.keras.layers.ReLU()
 
 
-        self.upsample1 = tf.keras.layers.Conv2DTranspose(filters=512,kernel_size=(2,2),strides=(2,2),padding='valid',name='UPSAMPLE1')
+        self.upsample1 = tf.keras.layers.Conv2DTranspose(filters=512,kernel_size=(2,2),strides=(2,2),padding='valid',name='UPSAMPLE1',kernel_regularizer=tf.keras.regularizers.L1L2(l1=l1_reg, l2=l2_reg))
         
-        self.conv51 = tf.keras.layers.Conv2D(filters=512,kernel_size=(3,3),strides=(1,1),padding='same',name='CONV51')
+        self.conv51 = tf.keras.layers.Conv2D(filters=512,kernel_size=(3,3),strides=(1,1),padding='same',name='CONV51',kernel_regularizer=tf.keras.regularizers.L1L2(l1=l1_reg, l2=l2_reg))
         self.BN51 = tf.keras.layers.BatchNormalization(name='BN51')
         self.ReLU51 = tf.keras.layers.ReLU()
 
-        self.conv52 = tf.keras.layers.Conv2D(filters=512,kernel_size=(3,3),strides=(1,1),padding='same',name='CONV52')
+        self.conv52 = tf.keras.layers.Conv2D(filters=512,kernel_size=(3,3),strides=(1,1),padding='same',name='CONV52',kernel_regularizer=tf.keras.regularizers.L1L2(l1=l1_reg, l2=l2_reg))
         self.BN52 = tf.keras.layers.BatchNormalization(name='BN52')
         self.ReLU52 = tf.keras.layers.ReLU()
 
-        self.upsample2 = tf.keras.layers.Conv2DTranspose(filters=256,kernel_size=(2,2),strides=(2,2),padding='valid',name='UPSAMPLE2')
+        self.upsample2 = tf.keras.layers.Conv2DTranspose(filters=256,kernel_size=(2,2),strides=(2,2),padding='valid',name='UPSAMPLE2',kernel_regularizer=tf.keras.regularizers.L1L2(l1=l1_reg, l2=l2_reg))
 
-        self.conv61 = tf.keras.layers.Conv2D(filters=256,kernel_size=(3,3),strides=(1,1),padding='same',name='CONV61')
+        self.conv61 = tf.keras.layers.Conv2D(filters=256,kernel_size=(3,3),strides=(1,1),padding='same',name='CONV61',kernel_regularizer=tf.keras.regularizers.L1L2(l1=l1_reg, l2=l2_reg))
         self.BN61 = tf.keras.layers.BatchNormalization(name='BN61')
         self.ReLU61 = tf.keras.layers.ReLU()
 
-        self.conv62 = tf.keras.layers.Conv2D(filters=256,kernel_size=(3,3),strides=(1,1),padding='same',name='CONV62')
+        self.conv62 = tf.keras.layers.Conv2D(filters=256,kernel_size=(3,3),strides=(1,1),padding='same',name='CONV62',kernel_regularizer=tf.keras.regularizers.L1L2(l1=l1_reg, l2=l2_reg))
         self.BN62 = tf.keras.layers.BatchNormalization(name='BN62')
         self.ReLU62 =tf.keras.layers.ReLU()
 
         self.upsample3 = tf.keras.layers.Conv2DTranspose(filters=128,kernel_size=(2,2),strides=(2,2),padding='valid',name='UPSAMPLE3')
 
-        self.conv71 = tf.keras.layers.Conv2D(filters=128,kernel_size=(3,3),strides=(1,1),padding='same',name='CONV71')
+        self.conv71 = tf.keras.layers.Conv2D(filters=128,kernel_size=(3,3),strides=(1,1),padding='same',name='CONV71',kernel_regularizer=tf.keras.regularizers.L1L2(l1=l1_reg, l2=l2_reg))
         self.BN71 = tf.keras.layers.BatchNormalization(name='BN71')
         self.ReLU71 = tf.keras.layers.ReLU()
 
-        self.conv72 = tf.keras.layers.Conv2D(filters=128,kernel_size=(3,3),strides=(1,1),padding='same',name='CONV72')
+        self.conv72 = tf.keras.layers.Conv2D(filters=128,kernel_size=(3,3),strides=(1,1),padding='same',name='CONV72',kernel_regularizer=tf.keras.regularizers.L1L2(l1=l1_reg, l2=l2_reg))
         self.BN72 = tf.keras.layers.BatchNormalization(name='BN72')
         self.ReLU72 = tf.keras.layers.ReLU()
 
         self.upsample4 = tf.keras.layers.Conv2DTranspose(filters=64,kernel_size=(2,2),strides=(2,2),padding='valid',name='UPSAMPLE3')
 
-        self.conv81 = tf.keras.layers.Conv2D(filters=64,kernel_size=(3,3),strides=(1,1),padding='same',name='CONV71')
+        self.conv81 = tf.keras.layers.Conv2D(filters=64,kernel_size=(3,3),strides=(1,1),padding='same',name='CONV71',kernel_regularizer=tf.keras.regularizers.L1L2(l1=l1_reg, l2=l2_reg))
         self.BN81 = tf.keras.layers.BatchNormalization(name='BN71')
         self.ReLU81 = tf.keras.layers.ReLU()
 
-        self.conv82 = tf.keras.layers.Conv2D(filters=64,kernel_size=(3,3),strides=(1,1),padding='same',name='CONV72')
+        self.conv82 = tf.keras.layers.Conv2D(filters=64,kernel_size=(3,3),strides=(1,1),padding='same',name='CONV72',kernel_regularizer=tf.keras.regularizers.L1L2(l1=l1_reg, l2=l2_reg))
         self.BN82 = tf.keras.layers.BatchNormalization(name='BN72')
         self.ReLU82 = tf.keras.layers.ReLU()
 

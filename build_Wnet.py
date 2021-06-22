@@ -59,6 +59,9 @@ class Wnet(tf.keras.Model):
         with tf.GradientTape() as tape:
           result_encoder = self.encoder(image_blurred)
           loss_encoder = self.loss_fn_segmentation(image,result_encoder,self.neighbour_filter)
+          # REGULARISATION
+          for layer in self.encoder.layers:
+            loss_encoder+=tf.math.reduce_sum(layer.losses)
     
         grads_encoder_1 = tape.gradient(loss_encoder, self.encoder.trainable_variables)
           
@@ -71,7 +74,11 @@ class Wnet(tf.keras.Model):
           result_encoder = self.encoder(image_blurred)
           result_decoder = self.decoder(result_encoder)
           loss_decoder = reconstruction_loss_weight*self.loss_fn_reconstruction(image,result_decoder)
-          
+          # REGULARISATION
+          for layer in self.encoder.layers+self.decoder.layers:
+            loss_decoder+=tf.math.reduce_sum(layer.losses)      
+
+
         grads_2 = tape.gradient(loss_decoder, self.encoder.trainable_variables+self.decoder.trainable_variables)
         self.optimizer.apply_gradients(
             zip(grads_2, self.encoder.trainable_variables+self.decoder.trainable_variables)
