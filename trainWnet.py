@@ -50,8 +50,8 @@ def main(arg):
     
     
     ## DATA
-    generator_train = get_generator(json_paths=JSON_PATHS_TRAIN,dim=INPUT_DIM,batch_size=IMS_PER_BATCH,damaged=False)
-    generator_test = get_generator(json_paths=JSON_PATHS_TEST,dim=INPUT_DIM,batch_size=IMS_PER_BATCH,damaged=False)
+    generator_train = get_generator(json_paths=JSON_PATHS_TRAIN,size=INPUT_DIM,batch_size=IMS_PER_BATCH,damaged=False)
+    generator_test = get_generator(json_paths=JSON_PATHS_TEST,size=INPUT_DIM,batch_size=IMS_PER_BATCH,damaged=False)
     
 
     #encoder = build_Unet(K=K,stages = STAGES,filters = FILTERS,type='encoder',input_size=INPUT_DIM,use_dropout=USE_DROPOUT)
