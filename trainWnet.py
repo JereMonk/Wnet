@@ -49,6 +49,9 @@ def main(arg):
     BLUR_KERNEL = int(custom_data['INPUT']['BLUR_KERNEL'])
     NOISE_AMP = int(custom_data['INPUT']['NOISE_AMP'])
 
+    L1_REG = int(custom_data['L1_REG'])
+    L2_REG = int(custom_data['L2_REG'])
+
     RECONSTRUCTION_LOSS_WEIGHT = int(custom_data["RECONSTRUCTION_LOSS_WEIGHT"])
     print('RECONSTRUCTION_LOSS_WEIGHT',RECONSTRUCTION_LOSS_WEIGHT)
     
@@ -61,8 +64,8 @@ def main(arg):
     #encoder = build_Unet(K=K,stages = STAGES,filters = FILTERS,type='encoder',input_size=INPUT_DIM,use_dropout=USE_DROPOUT)
     #decoder = build_Unet(K=K,stages = STAGES,filters = FILTERS,type='decoder',input_size=INPUT_DIM,use_dropout=USE_DROPOUT)
     
-    encoder = Unet(K=K,type='encoder',input_size=INPUT_DIM,do_dropout=USE_DROPOUT)
-    decoder = Unet(K=K,type='decoder',input_size=INPUT_DIM,do_dropout=USE_DROPOUT)
+    encoder = Unet(K=K,type='encoder',input_size=INPUT_DIM,do_dropout=USE_DROPOUT,l1_reg=L1_REG,l2_reg=L2_REG)
+    decoder = Unet(K=K,type='decoder',input_size=INPUT_DIM,do_dropout=USE_DROPOUT,l1_reg=L1_REG,l2_reg=L2_REG)
     wn = Wnet(encoder,decoder,(INPUT_DIM,INPUT_DIM))
 
     ## Load weights
