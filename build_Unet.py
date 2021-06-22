@@ -1,6 +1,5 @@
 import tensorflow as tf
 
-
 class Unet(tf.keras.Model):
     def __init__(self,input_size,type,K,do_dropout=False,l1_reg=0,l2_reg=0):
         super(Unet, self).__init__()
